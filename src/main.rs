@@ -1,8 +1,6 @@
-
 use macroquad::prelude::*;
 use macroquad_tiled as tiled;
 use macroquad_platformer::*;
-
 
 struct Player {
     collider: Actor,
@@ -34,14 +32,13 @@ async fn main() {
 
  
     let mut world = World::new();
-    world.add_static_tiled_layer(static_colliders,32., 32.,31, 1);
+    world.add_static_tiled_layer(static_colliders,32., 32.,30, 1);
 
     let mut player = Player {
         collider: world.add_actor(vec2(50.0, 120.0), 8, 8),
         speed: vec2(0., 0.),
     };
 
-    //let camera = Camera2D::from_display_rect(Rect::new(0.0, 152.0, 320.0, -152.0));
     let camera = Camera2D::from_display_rect(Rect::new(0.0, 152.0, 320.0, -152.0));
 
     loop {
@@ -54,7 +51,7 @@ async fn main() {
         //draw player
         {
             // sprite id from tiled
-            const PLAYER_SPRITE: u32 = 1;
+            const PLAYER_SPRITE: u32 = 5;
 
             let pos = world.actor_pos(player.collider);
             if player.speed.x >= 0.0 {
@@ -74,10 +71,10 @@ async fn main() {
             
             let on_ground = world.collide_check(player.collider, pos + vec2(0., 1.));
             
-            if on_ground == false {
+            if !on_ground {
                 player.speed.y += 500. * get_frame_time();
                 
-            } 
+            }      
             
             if is_key_down(KeyCode::Right) {
                 player.speed.x = 100.0;
@@ -87,14 +84,9 @@ async fn main() {
                 player.speed.x = 0.;
             }
 
-            if is_key_pressed(KeyCode::Space) {
-                if on_ground {
-                    player.speed.y = -120.;
-                }
+            if is_key_pressed(KeyCode::Space) && on_ground {
+                player.speed.y = -120.;
             }
-
-            
-
 
             if is_mouse_button_pressed(MouseButton::Left) {
                 let (mouse_x,mouse_y) = mouse_position();
