@@ -56,7 +56,7 @@ async fn main() {
             name: "idle".to_string(),
             row: 0,
             frames: 1,
-            fps: 4,
+            fps: 1,
         }
 
     ], true);
@@ -64,8 +64,7 @@ async fn main() {
 
     let camera = Camera2D::from_display_rect(Rect::new(0.0, 320.0, 608.0, -320.0));
 
-    //let mut is_jumping = false;
-
+    let mut player_direction: f32 = 1.0;   
     loop {
         clear_background(BLACK);
         
@@ -76,25 +75,33 @@ async fn main() {
         //draw player
         {
             let pos = world.actor_pos(player.collider);
-            if player.speed.x > 0.0 {
+            if player.speed.x != 0.0 {
                 animated_player.set_animation(0);
+            } else {
+                animated_player.set_animation(1);
+            }
+
+            
+            if player.speed.x > 0.0 {
+                //player_direction = 1.0;
                 tiled_map.spr_ex("dave_walk", 
                         animated_player.frame().source_rect, 
                         Rect::new(pos.x, pos.y, 32.0, 32.0));
                         
             } else if player.speed.x < 0.0 {
-                animated_player.set_animation(0);
+                //player_direction = -1.0;
                 tiled_map.spr_ex("dave_walk", 
                         animated_player.frame().source_rect, 
                         Rect::new(pos.x + 32.0, pos.y, -32.0, 32.0));
                         
             } else {
-                animated_player.set_animation(1);
+                
                 tiled_map.spr_ex("dave_idle", 
                         animated_player.frame().source_rect, 
-                        Rect::new(pos.x + 32.0, pos.y, -32.0, 32.0));
+                        Rect::new(pos.x, pos.y, 32.0, 32.0));
                         
             }
+
 
             animated_player.update();
             
@@ -114,21 +121,16 @@ async fn main() {
             
             if is_key_down(KeyCode::Right) {
                 player.speed.x = 100.0;
+                player_direction = 1.0;
             } else if is_key_down(KeyCode::Left) {
                 player.speed.x = -100.0;
+                player_direction = -1.0;
             } else {
                 player.speed.x = 0.;
             }
 
             if is_key_pressed(KeyCode::Space) && on_ground {
                 player.speed.y = -260.;
-            }
-
-            if is_mouse_button_pressed(MouseButton::Left) {
-                let (mouse_x,mouse_y) = mouse_position();
-                println!("(x, y) = ({}, {})",mouse_x, mouse_y);
-                let camera_coords = camera.screen_to_world(vec2(mouse_x, mouse_y));
-                println!("Camera coordinates: x: {}, y: {}", camera_coords.x, camera_coords.y);
             }
 
             world.move_h(player.collider, player.speed.x * get_frame_time());
