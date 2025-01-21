@@ -1,3 +1,4 @@
+use animation::{AnimatedSprite, Animation};
 use macroquad::prelude::*;
 use macroquad_tiled as tiled;
 use macroquad_platformer::*;
@@ -15,10 +16,14 @@ async fn main() {
     let player = load_texture("examples/dave_walk.png").await.unwrap();
     player.set_filter(FilterMode::Nearest);
 
+    let player_idle = load_texture("examples/dave_idle.png").await.unwrap();
+    player.set_filter(FilterMode::Nearest);
+
     let tiled_map_json = load_string("examples/level1.json").await.unwrap();
     let tiled_map = tiled::load_map(&tiled_map_json, 
         &[("mytileset.png", tileset),
-                    ("dave_walk.png", player)], &[])
+                    ("dave_walk.png", player),
+                    ("dave_idle.png", player_idle)], &[])
                     .unwrap();
         
 
@@ -40,6 +45,23 @@ async fn main() {
         speed: vec2(0., 0.),
     };
 
+    let mut animated_player = AnimatedSprite::new(32, 32, &[
+        Animation {
+            name: "walk".to_string(),
+            row: 0,
+            frames: 2,
+            fps: 4,
+        },
+        Animation {
+            name: "idle".to_string(),
+            row: 0,
+            frames: 1,
+            fps: 4,
+        }
+
+    ], true);
+
+
     let camera = Camera2D::from_display_rect(Rect::new(0.0, 320.0, 608.0, -320.0));
 
     //let mut is_jumping = false;
@@ -53,19 +75,29 @@ async fn main() {
 
         //draw player
         {
-            // sprite id from tiled
-            const PLAYER_SPRITE: u32 = 1;
-
             let pos = world.actor_pos(player.collider);
-            if player.speed.x >= 0.0 {
-                tiled_map.spr("dave_walk", PLAYER_SPRITE, Rect::new(pos.x, pos.y, 32.0, 32.0));
+            if player.speed.x > 0.0 {
+                animated_player.set_animation(0);
+                tiled_map.spr_ex("dave_walk", 
+                        animated_player.frame().source_rect, 
+                        Rect::new(pos.x, pos.y, 32.0, 32.0));
+                        
+            } else if player.speed.x < 0.0 {
+                animated_player.set_animation(0);
+                tiled_map.spr_ex("dave_walk", 
+                        animated_player.frame().source_rect, 
+                        Rect::new(pos.x + 32.0, pos.y, -32.0, 32.0));
+                        
             } else {
-                tiled_map.spr(
-                    "dave_walk",
-                    PLAYER_SPRITE,
-                    Rect::new(pos.x + 32.0, pos.y, -32.0, 32.0),
-                );
+                animated_player.set_animation(1);
+                tiled_map.spr_ex("dave_idle", 
+                        animated_player.frame().source_rect, 
+                        Rect::new(pos.x + 32.0, pos.y, -32.0, 32.0));
+                        
             }
+
+            animated_player.update();
+            
         }
 
         // player movement control
