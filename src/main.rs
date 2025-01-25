@@ -100,7 +100,6 @@ async fn main() {
 
     let camera = Camera2D::from_display_rect(Rect::new(0.0, 320.0, 608.0, -320.0));
 
-    //let mut player_direction: f32 = 1.0;
     loop {
         clear_background(BLACK);
 
@@ -120,7 +119,6 @@ async fn main() {
                 animated_player.set_animation(0);
             }
 
-            animated_player.set_animation(0);
             let flip = if player.speed.x < 0.0 { -32.0 } else { 32.0 };
             tiled_map.spr_ex(
                 "dave_walk",
@@ -150,10 +148,8 @@ async fn main() {
 
         if is_key_down(KeyCode::Right) {
             player.speed.x = 100.0;
-            //player_direction = 1.0;
         } else if is_key_down(KeyCode::Left) {
             player.speed.x = -100.0;
-            //player_direction = -1.0;
         } else {
             player.speed.x = 0.;
         }
