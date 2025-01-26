@@ -10,10 +10,7 @@ struct Player {
 }
 
 struct Resources {
-    tileset: Texture2D,
-    player: Texture2D,
-    player_idle: Texture2D,
-    player_jump: Texture2D,
+    tiled_map: tiled::Map,
 }
 
 impl Resources {
@@ -30,11 +27,21 @@ impl Resources {
         let player_jump = load_texture("examples/dave_jump.png").await.unwrap();
         player_jump.set_filter(FilterMode::Nearest);
 
+        let tiled_map_json = load_string("examples/level1.json").await.unwrap();
+        let tiled_map = tiled::load_map(
+            &tiled_map_json,
+            &[
+                ("mytileset.png", tileset),
+                ("dave_walk.png", player),
+                ("dave_idle.png", player_idle),
+                ("dave_jump.png", player_jump),
+            ],
+            &[],
+        )
+        .unwrap();
+
         Resources {
-            tileset,
-            player,
-            player_idle,
-            player_jump,
+            tiled_map
         }
     }
 }
@@ -43,21 +50,8 @@ impl Resources {
 async fn main() {
     let resources = Resources::load().await;
 
-    let tiled_map_json = load_string("examples/level1.json").await.unwrap();
-    let tiled_map = tiled::load_map(
-        &tiled_map_json,
-        &[
-            ("mytileset.png", resources.tileset),
-            ("dave_walk.png", resources.player),
-            ("dave_idle.png", resources.player_idle),
-            ("dave_jump.png", resources.player_jump),
-        ],
-        &[],
-    )
-    .unwrap();
-
     let mut static_colliders = vec![];
-    for (_x, _y, tile) in tiled_map.tiles("Tile Layer 1", None) {
+    for (_x, _y, tile) in resources.tiled_map.tiles("Tile Layer 1", None) {
         static_colliders.push(if tile.is_some() {
             Tile::Solid
         } else {
@@ -107,7 +101,7 @@ async fn main() {
 
         set_camera(&camera);
 
-        tiled_map.draw_tiles("Tile Layer 1", Rect::new(0.0, 0.0, 608.0, 320.0), None);
+        resources.tiled_map.draw_tiles("Tile Layer 1", Rect::new(0.0, 0.0, 608.0, 320.0), None);
 
         let pos = world.actor_pos(player.collider);
 
@@ -139,7 +133,7 @@ async fn main() {
             flip = if player.facing_left { -32.0 } else { 32.0 };
         }
 
-        tiled_map.spr_ex(
+        resources.tiled_map.spr_ex(
             state,
             animated_player.frame().source_rect,
             Rect::new(
