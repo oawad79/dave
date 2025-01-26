@@ -32,8 +32,6 @@ impl Resources {
         )
         .unwrap();
 
-        Resources {
-            tiled_map
-        }
+        Resources { tiled_map }
     }
 }

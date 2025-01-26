@@ -1,7 +1,6 @@
 use macroquad::math::{vec2, Vec2};
 use macroquad_platformer::Actor;
 
-
 pub struct Player {
     pub collider: Actor,
     pub speed: Vec2,

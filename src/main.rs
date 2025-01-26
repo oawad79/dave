@@ -1,5 +1,5 @@
-mod resources;
 mod player;
+mod resources;
 
 use animation::{AnimatedSprite, Animation};
 use macroquad::prelude::*;
@@ -19,9 +19,13 @@ async fn main() {
     }
 
     let mut world = World::new();
-    world.add_static_tiled_layer(static_colliders, 32., 32., 19, 1);
+    world.add_static_tiled_layer(static_colliders, 
+        32., 32., 19, 1);
 
-    let mut player = player::Player::new(world.add_actor(vec2(60.0, 250.0), 32, 32));
+    let mut player = player::Player::new(
+        world.add_actor(vec2(60.0, 250.0), 
+        32, 
+        32));
 
     let mut animated_player = AnimatedSprite::new(
         32,
@@ -49,14 +53,21 @@ async fn main() {
         true,
     );
 
-    let camera = Camera2D::from_display_rect(Rect::new(0.0, 320.0, 608.0, -320.0));
+    let camera = Camera2D::from_display_rect(
+        Rect::new(0.0, 320.0, 608.0, -320.0)
+    );
 
     loop {
         clear_background(BLACK);
 
         set_camera(&camera);
 
-        resources.tiled_map.draw_tiles("Tile Layer 1", Rect::new(0.0, 0.0, 608.0, 320.0), None);
+        resources
+            .tiled_map
+            .draw_tiles(
+                "Tile Layer 1", 
+                Rect::new(0.0, 0.0, 608.0, 320.0),
+                None);
 
         let pos = world.actor_pos(player.collider);
 
@@ -74,7 +85,7 @@ async fn main() {
                 animated_player.set_animation(0); // walk
                 "dave_walk"
             };
-        
+
             if player.speed.x < 0.0 {
                 player.facing_left = true;
                 flip = -32.0;
