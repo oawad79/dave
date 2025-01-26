@@ -1,4 +1,4 @@
-use macroquad::math::{vec2, Vec2};
+use macroquad::{math::{vec2, Vec2}, prelude::animation::{AnimatedSprite, Animation}};
 use macroquad_platformer::Actor;
 
 pub struct Player {
@@ -32,3 +32,32 @@ impl AnimationState {
         }
     }
 }
+
+pub fn animated_player() -> AnimatedSprite {
+    AnimatedSprite::new(
+        32,
+        32,
+        &[
+            Animation {
+                name: AnimationState::Walk.as_str().to_string(),
+                row: 0,
+                frames: 2,
+                fps: 4,
+            },
+            Animation {
+                name: AnimationState::Idle.as_str().to_string(),
+                row: 0,
+                frames: 1,
+                fps: 1,
+            },
+            Animation {
+                name: AnimationState::Jump.as_str().to_string(),
+                row: 0,
+                frames: 1,
+                fps: 1,
+            },
+        ],
+        true,
+    )
+}
+

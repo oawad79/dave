@@ -1,12 +1,11 @@
 mod player;
 mod resources;
 
+use player::animated_player;
 use player::Player;
-use player::AnimationState;
 
 use resources::Resources;
 
-use animation::{AnimatedSprite, Animation};
 use macroquad::prelude::*;
 use macroquad_platformer::*;
 
@@ -33,31 +32,7 @@ async fn main() {
         32, 
         32));
 
-    let mut animated_player = AnimatedSprite::new(
-        32,
-        32,
-        &[
-            Animation {
-                name: AnimationState::Walk.as_str().to_string(),
-                row: 0,
-                frames: 2,
-                fps: 4,
-            },
-            Animation {
-                name: AnimationState::Idle.as_str().to_string(),
-                row: 0,
-                frames: 1,
-                fps: 1,
-            },
-            Animation {
-                name: AnimationState::Jump.as_str().to_string(),
-                row: 0,
-                frames: 1,
-                fps: 1,
-            },
-        ],
-        true,
-    );
+    let mut animated_player = animated_player();
 
     let camera = Camera2D::from_display_rect(
         Rect::new(0.0, 320.0, 608.0, -320.0)
