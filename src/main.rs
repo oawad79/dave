@@ -1,13 +1,16 @@
 mod player;
 mod resources;
 
+use player::Player;
+use resources::Resources;
+
 use animation::{AnimatedSprite, Animation};
 use macroquad::prelude::*;
 use macroquad_platformer::*;
 
 #[macroquad::main("Dave")]
 async fn main() {
-    let resources = resources::Resources::load().await;
+    let resources = Resources::load().await;
 
     let mut static_colliders = vec![];
     for (_x, _y, tile) in resources.tiled_map.tiles("Tile Layer 1", None) {
@@ -22,7 +25,7 @@ async fn main() {
     world.add_static_tiled_layer(static_colliders, 
         32., 32., 19, 1);
 
-    let mut player = player::Player::new(
+    let mut player = Player::new(
         world.add_actor(vec2(60.0, 250.0), 
         32, 
         32));
