@@ -6,6 +6,7 @@ use macroquad_tiled as tiled;
 struct Player {
     collider: Actor,
     speed: Vec2,
+    facing_left: bool,
 }
 
 struct Resources {
@@ -70,6 +71,7 @@ async fn main() {
     let mut player = Player {
         collider: world.add_actor(vec2(60.0, 250.0), 32, 32),
         speed: vec2(0., 0.),
+        facing_left: false,
     };
 
     let mut animated_player = AnimatedSprite::new(
@@ -112,34 +114,41 @@ async fn main() {
         let on_ground = world.collide_check(player.collider, pos + vec2(0., 1.));
 
         // Draw player
+        let state: &str;
+        let flip: f32;
+
         if player.speed.x != 0.0 {
-            let state : &str = if !on_ground {
-                animated_player.set_animation(2); //jump
+            state = if !on_ground {
+                animated_player.set_animation(2); // jump
                 "dave_jump"
             } else {
-                animated_player.set_animation(0); //walk
+                animated_player.set_animation(0); // walk
                 "dave_walk"
             };
-
-            let flip = if player.speed.x < 0.0 { -32.0 } else { 32.0 };
-            tiled_map.spr_ex(
-                state,
-                animated_player.frame().source_rect,
-                Rect::new(
-                    pos.x + if flip < 0.0 { 32.0 } else { 0.0 },
-                    pos.y,
-                    flip,
-                    32.0,
-                ),
-            );
+        
+            if player.speed.x < 0.0 {
+                player.facing_left = true;
+                flip = -32.0;
+            } else {
+                player.facing_left = false;
+                flip = 32.0;
+            }
         } else {
-            animated_player.set_animation(1);
-            tiled_map.spr_ex(
-                "dave_idle",
-                animated_player.frame().source_rect,
-                Rect::new(pos.x, pos.y, 32.0, 32.0),
-            );
+            state = "dave_idle";
+            animated_player.set_animation(1); // idle
+            flip = if player.facing_left { -32.0 } else { 32.0 };
         }
+
+        tiled_map.spr_ex(
+            state,
+            animated_player.frame().source_rect,
+            Rect::new(
+                pos.x + if flip < 0.0 { 32.0 } else { 0.0 },
+                pos.y,
+                flip,
+                32.0,
+            ),
+        );
 
         animated_player.update();
 
