@@ -2,11 +2,14 @@ mod player;
 mod resources;
 
 use player::Player;
+use player::AnimationState;
+
 use resources::Resources;
 
 use animation::{AnimatedSprite, Animation};
 use macroquad::prelude::*;
 use macroquad_platformer::*;
+
 
 #[macroquad::main("Dave")]
 async fn main() {
@@ -35,19 +38,19 @@ async fn main() {
         32,
         &[
             Animation {
-                name: "walk".to_string(),
+                name: AnimationState::Walk.as_str().to_string(),
                 row: 0,
                 frames: 2,
                 fps: 4,
             },
             Animation {
-                name: "idle".to_string(),
+                name: AnimationState::Idle.as_str().to_string(),
                 row: 0,
                 frames: 1,
                 fps: 1,
             },
             Animation {
-                name: "jump".to_string(),
+                name: AnimationState::Jump.as_str().to_string(),
                 row: 0,
                 frames: 1,
                 fps: 1,

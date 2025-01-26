@@ -16,3 +16,19 @@ impl Player {
         }
     }
 }
+
+pub enum AnimationState {
+    Walk,
+    Idle,
+    Jump,
+}
+
+impl AnimationState {
+    pub fn as_str(&self) -> &str {
+        match self {
+            AnimationState::Walk => "walk",
+            AnimationState::Idle => "idle",
+            AnimationState::Jump => "jump",
+        }
+    }
+}
