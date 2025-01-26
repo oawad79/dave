@@ -113,15 +113,17 @@ async fn main() {
 
         // Draw player
         if player.speed.x != 0.0 {
-            if !on_ground {
-                animated_player.set_animation(2);
+            let state : &str = if !on_ground {
+                animated_player.set_animation(2); //jump
+                "dave_jump"
             } else {
-                animated_player.set_animation(0);
-            }
+                animated_player.set_animation(0); //walk
+                "dave_walk"
+            };
 
             let flip = if player.speed.x < 0.0 { -32.0 } else { 32.0 };
             tiled_map.spr_ex(
-                "dave_walk",
+                state,
                 animated_player.frame().source_rect,
                 Rect::new(
                     pos.x + if flip < 0.0 { 32.0 } else { 0.0 },
