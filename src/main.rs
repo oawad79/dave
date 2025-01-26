@@ -1,54 +1,13 @@
+mod resources;
+mod player;
+
 use animation::{AnimatedSprite, Animation};
 use macroquad::prelude::*;
 use macroquad_platformer::*;
-use macroquad_tiled as tiled;
-
-struct Player {
-    collider: Actor,
-    speed: Vec2,
-    facing_left: bool,
-}
-
-struct Resources {
-    tiled_map: tiled::Map,
-}
-
-impl Resources {
-    async fn load() -> Self {
-        let tileset = load_texture("examples/mytileset.png").await.unwrap();
-        tileset.set_filter(FilterMode::Nearest);
-
-        let player = load_texture("examples/dave_walk.png").await.unwrap();
-        player.set_filter(FilterMode::Nearest);
-
-        let player_idle = load_texture("examples/dave_idle.png").await.unwrap();
-        player_idle.set_filter(FilterMode::Nearest);
-
-        let player_jump = load_texture("examples/dave_jump.png").await.unwrap();
-        player_jump.set_filter(FilterMode::Nearest);
-
-        let tiled_map_json = load_string("examples/level1.json").await.unwrap();
-        let tiled_map = tiled::load_map(
-            &tiled_map_json,
-            &[
-                ("mytileset.png", tileset),
-                ("dave_walk.png", player),
-                ("dave_idle.png", player_idle),
-                ("dave_jump.png", player_jump),
-            ],
-            &[],
-        )
-        .unwrap();
-
-        Resources {
-            tiled_map
-        }
-    }
-}
 
 #[macroquad::main("Dave")]
 async fn main() {
-    let resources = Resources::load().await;
+    let resources = resources::Resources::load().await;
 
     let mut static_colliders = vec![];
     for (_x, _y, tile) in resources.tiled_map.tiles("Tile Layer 1", None) {
@@ -62,11 +21,7 @@ async fn main() {
     let mut world = World::new();
     world.add_static_tiled_layer(static_colliders, 32., 32., 19, 1);
 
-    let mut player = Player {
-        collider: world.add_actor(vec2(60.0, 250.0), 32, 32),
-        speed: vec2(0., 0.),
-        facing_left: false,
-    };
+    let mut player = player::Player::new(world.add_actor(vec2(60.0, 250.0), 32, 32));
 
     let mut animated_player = AnimatedSprite::new(
         32,
