@@ -13,7 +13,7 @@ use macroquad_platformer::*;
 #[macroquad::main("Dave")]
 async fn main() {
     let resources = Resources::load().await;
-
+    println!("player pos: 1.0");
     let mut static_colliders = vec![];
     for (_x, _y, tile) in resources.tiled_map.tiles("Tile Layer 1", None) {
         static_colliders.push(if tile.is_some() {
